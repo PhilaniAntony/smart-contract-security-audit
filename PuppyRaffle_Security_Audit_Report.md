@@ -223,6 +223,7 @@ Console output:
 
 ```
 [PASS] test_denialOfService() (gas: 25536402)
+
 Logs:
   Gas used for first 100 players: 6503275
   Gas used for second 100 players: 1899551

@@ -243,6 +243,7 @@ It is used by:
 - **constable-states**
   - _PuppyRaffle.rareImageUri (src/PuppyRaffle.sol#43) should be constant_
   - Affected: `rareImageUri`
+  - 
 - **immutable-states**
   - _PuppyRaffle.raffleDuration (src/PuppyRaffle.sol#24) should be immutable_
   - Affected: `raffleDuration`
