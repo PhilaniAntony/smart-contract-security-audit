@@ -1,0 +1,248 @@
+# Slither Report Summary
+
+## Unknown Severity Issues
+
+- **arbitrary-send-eth**
+  - _PuppyRaffle.withdrawFees() (src/PuppyRaffle.sol#157-163) sends eth to arbitrary user
+	Dangerous calls:
+	- (success,None) = feeAddress.call{value: feesToWithdraw}() (src/PuppyRaffle.sol#161)_
+  - Affected: `withdrawFees, (success,None) = feeAddress.call{value: feesToWithdraw}()`
+- **weak-prng**
+  - _PuppyRaffle.selectWinner() (src/PuppyRaffle.sol#125-154) uses a weak PRNG: "winnerIndex = uint256(keccak256(bytes)(abi.encodePacked(msg.sender,block.timestamp,block.difficulty))) % players.length (src/PuppyRaffle.sol#128-129)"_
+  - Affected: `selectWinner, winnerIndex = uint256(keccak256(bytes)(abi.encodePacked(msg.sender,block.timestamp,block.difficulty))) % players.length`
+- **divide-before-multiply**
+  - _Base64.decode(string) (lib/base64/base64.sol#68-129) performs a multiplication on the result of a division:
+	- decodedLen = (data.length / 4) * 3 (lib/base64/base64.sol#78)_
+  - Affected: `decode, decodedLen = (data.length / 4) * 3`
+- **divide-before-multiply**
+  - _Base64.encode(bytes) (lib/base64/base64.sol#15-66) performs a multiplication on the result of a division:
+	- encodedLen = 4 * ((data.length + 2) / 3) (lib/base64/base64.sol#22)_
+  - Affected: `encode, encodedLen = 4 * ((data.length + 2) / 3)`
+- **incorrect-equality**
+  - _PuppyRaffle.withdrawFees() (src/PuppyRaffle.sol#157-163) uses a dangerous strict equality:
+	- require(bool,string)(address(this).balance == uint256(totalFees),PuppyRaffle: There are currently players active!) (src/PuppyRaffle.sol#158)_
+  - Affected: `withdrawFees, require(bool,string)(address(this).balance == uint256(totalFees),PuppyRaffle: There are currently players active!)`
+- **reentrancy-no-eth**
+  - _Reentrancy in PuppyRaffle.refund(uint256) (src/PuppyRaffle.sol#96-105):
+	External calls:
+	- address(msg.sender).sendValue(entranceFee) (src/PuppyRaffle.sol#101)
+	State variables written after the call(s):
+	- players[playerIndex] = address(0) (src/PuppyRaffle.sol#103)
+	PuppyRaffle.players (src/PuppyRaffle.sol#23) can be used in cross function reentrancies:
+	- PuppyRaffle.enterRaffle(address[]) (src/PuppyRaffle.sol#79-92)
+	- PuppyRaffle.getActivePlayerIndex(address) (src/PuppyRaffle.sol#110-117)
+	- PuppyRaffle.players (src/PuppyRaffle.sol#23)
+	- PuppyRaffle.refund(uint256) (src/PuppyRaffle.sol#96-105)
+	- PuppyRaffle.selectWinner() (src/PuppyRaffle.sol#125-154)_
+  - Affected: `refund, address(msg.sender).sendValue(entranceFee), players[playerIndex] = address(0)`
+- **unused-return**
+  - _ERC721._transfer(address,address,uint256) (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#387-402) ignores return value by _holderTokens[from].remove(tokenId) (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#396)_
+  - Affected: `_transfer, _holderTokens[from].remove(tokenId)`
+- **unused-return**
+  - _ERC721._mint(address,uint256) (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#333-344) ignores return value by _holderTokens[to].add(tokenId) (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#339)_
+  - Affected: `_mint, _holderTokens[to].add(tokenId)`
+- **unused-return**
+  - _ERC721.tokenByIndex(uint256) (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#180-183) ignores return value by (tokenId,None) = _tokenOwners.at(index) (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#181)_
+  - Affected: `tokenByIndex, (tokenId,None) = _tokenOwners.at(index)`
+- **unused-return**
+  - _ERC721._transfer(address,address,uint256) (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#387-402) ignores return value by _tokenOwners.set(tokenId,to) (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#399)_
+  - Affected: `_transfer, _tokenOwners.set(tokenId,to)`
+- **unused-return**
+  - _ERC721._burn(uint256) (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#356-374) ignores return value by _tokenOwners.remove(tokenId) (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#371)_
+  - Affected: `_burn, _tokenOwners.remove(tokenId)`
+- **unused-return**
+  - _ERC721._mint(address,uint256) (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#333-344) ignores return value by _tokenOwners.set(tokenId,to) (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#341)_
+  - Affected: `_mint, _tokenOwners.set(tokenId,to)`
+- **unused-return**
+  - _ERC721._burn(uint256) (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#356-374) ignores return value by _holderTokens[owner].remove(tokenId) (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#369)_
+  - Affected: `_burn, _holderTokens[owner].remove(tokenId)`
+- **unused-return**
+  - _ERC721._transfer(address,address,uint256) (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#387-402) ignores return value by _holderTokens[to].add(tokenId) (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#397)_
+  - Affected: `_transfer, _holderTokens[to].add(tokenId)`
+- **missing-zero-check**
+  - _PuppyRaffle.changeFeeAddress(address).newFeeAddress (src/PuppyRaffle.sol#167) lacks a zero-check on :
+		- feeAddress = newFeeAddress (src/PuppyRaffle.sol#168)_
+  - Affected: `newFeeAddress, feeAddress = newFeeAddress`
+- **missing-zero-check**
+  - _PuppyRaffle.constructor(uint256,address,uint256)._feeAddress (src/PuppyRaffle.sol#60) lacks a zero-check on :
+		- feeAddress = _feeAddress (src/PuppyRaffle.sol#62)_
+  - Affected: `_feeAddress, feeAddress = _feeAddress`
+- **reentrancy-events**
+  - _Reentrancy in PuppyRaffle.selectWinner() (src/PuppyRaffle.sol#125-154):
+	External calls:
+	- (success,None) = winner.call{value: prizePool}() (src/PuppyRaffle.sol#151)
+	- _safeMint(winner,tokenId) (src/PuppyRaffle.sol#153)
+		- returndata = to.functionCall(abi.encodeWithSelector(IERC721Receiver(to).onERC721Received.selector,_msgSender(),from,tokenId,_data),ERC721: transfer to non ERC721Receiver implementer) (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#441-447)
+		- (success,returndata) = target.call{value: value}(data) (lib/openzeppelin-contracts/contracts/utils/Address.sol#119)
+	External calls sending eth:
+	- (success,None) = winner.call{value: prizePool}() (src/PuppyRaffle.sol#151)
+	- _safeMint(winner,tokenId) (src/PuppyRaffle.sol#153)
+		- (success,returndata) = target.call{value: value}(data) (lib/openzeppelin-contracts/contracts/utils/Address.sol#119)
+	Event emitted after the call(s):
+	- Transfer(address(0),to,tokenId) (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#343)
+		- _safeMint(winner,tokenId) (src/PuppyRaffle.sol#153)_
+  - Affected: `selectWinner, (success,None) = winner.call{value: prizePool}(), _safeMint(winner,tokenId), returndata = to.functionCall(abi.encodeWithSelector(IERC721Receiver(to).onERC721Received.selector,_msgSender(),from,tokenId,_data),ERC721: transfer to non ERC721Receiver implementer), (success,returndata) = target.call{value: value}(data), (success,None) = winner.call{value: prizePool}(), _safeMint(winner,tokenId), (success,returndata) = target.call{value: value}(data), Transfer(address(0),to,tokenId), _safeMint(winner,tokenId)`
+- **reentrancy-events**
+  - _Reentrancy in PuppyRaffle.refund(uint256) (src/PuppyRaffle.sol#96-105):
+	External calls:
+	- address(msg.sender).sendValue(entranceFee) (src/PuppyRaffle.sol#101)
+	Event emitted after the call(s):
+	- RaffleRefunded(playerAddress) (src/PuppyRaffle.sol#104)_
+  - Affected: `refund, address(msg.sender).sendValue(entranceFee), RaffleRefunded(playerAddress)`
+- **timestamp**
+  - _PuppyRaffle.selectWinner() (src/PuppyRaffle.sol#125-154) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(block.timestamp >= raffleStartTime + raffleDuration,PuppyRaffle: Raffle not over) (src/PuppyRaffle.sol#126)_
+  - Affected: `selectWinner, require(bool,string)(block.timestamp >= raffleStartTime + raffleDuration,PuppyRaffle: Raffle not over)`
+- **assembly**
+  - _Address.isContract(address) (lib/openzeppelin-contracts/contracts/utils/Address.sol#26-35) uses assembly
+	- INLINE ASM (lib/openzeppelin-contracts/contracts/utils/Address.sol#33)_
+  - Affected: `isContract, `
+- **assembly**
+  - _Address._verifyCallResult(bool,bytes,string) (lib/openzeppelin-contracts/contracts/utils/Address.sol#171-188) uses assembly
+	- INLINE ASM (lib/openzeppelin-contracts/contracts/utils/Address.sol#180-183)_
+  - Affected: `_verifyCallResult, `
+- **assembly**
+  - _Base64.encode(bytes) (lib/base64/base64.sol#15-66) uses assembly
+	- INLINE ASM (lib/base64/base64.sol#27-63)_
+  - Affected: `encode, `
+- **assembly**
+  - _Base64.decode(string) (lib/base64/base64.sol#68-129) uses assembly
+	- INLINE ASM (lib/base64/base64.sol#83-126)_
+  - Affected: `decode, `
+- **pragma**
+  - _4 different versions of Solidity are used:
+	- Version constraint >=0.6.0 is used by:
+		->=0.6.0 (lib/base64/base64.sol#3)
+	- Version constraint >=0.6.0<0.8.0 is used by:
+		->=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/access/Ownable.sol#3)
+		->=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/introspection/ERC165.sol#3)
+		->=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/introspection/IERC165.sol#3)
+		->=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/math/SafeMath.sol#3)
+		->=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#3)
+		->=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Receiver.sol#3)
+		->=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/utils/Context.sol#3)
+		->=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/utils/EnumerableMap.sol#3)
+		->=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/utils/EnumerableSet.sol#3)
+		->=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/utils/Strings.sol#3)
+	- Version constraint >=0.6.2<0.8.0 is used by:
+		->=0.6.2<0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol#3)
+		->=0.6.2<0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Enumerable.sol#3)
+		->=0.6.2<0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Metadata.sol#3)
+		->=0.6.2<0.8.0 (lib/openzeppelin-contracts/contracts/utils/Address.sol#3)
+	- Version constraint ^0.7.6 is used by:
+		-^0.7.6 (src/PuppyRaffle.sol#2)_
+  - Affected: `>=0.6.0, >=0.6.0<0.8.0, >=0.6.0<0.8.0, >=0.6.0<0.8.0, >=0.6.0<0.8.0, >=0.6.0<0.8.0, >=0.6.0<0.8.0, >=0.6.0<0.8.0, >=0.6.0<0.8.0, >=0.6.0<0.8.0, >=0.6.0<0.8.0, >=0.6.2<0.8.0, >=0.6.2<0.8.0, >=0.6.2<0.8.0, >=0.6.2<0.8.0, ^0.7.6`
+- **dead-code**
+  - _PuppyRaffle._isActivePlayer() (src/PuppyRaffle.sol#173-180) is never used and should be removed_
+  - Affected: `_isActivePlayer`
+- **solc-version**
+  - _solc-0.7.6 is an outdated solc version. Use a more recent version (at least 0.8.0), if possible._
+- **solc-version**
+  - _Version constraint >=0.6.0 contains known severe issues (https://solidity.readthedocs.io/en/latest/bugs.html)
+	- AbiReencodingHeadOverflowWithStaticArrayCleanup
+	- DirtyBytesArrayToStorage
+	- NestedCalldataArrayAbiReencodingSizeValidation
+	- ABIDecodeTwoDimensionalArrayMemory
+	- KeccakCaching
+	- EmptyByteArrayCopy
+	- DynamicArrayCleanup
+	- MissingEscapingInFormatting
+	- ArraySliceDynamicallyEncodedBaseType
+	- ImplicitConstructorCallvalueCheck
+	- TupleAssignmentMultiStackSlotComponents
+	- MemoryArrayCreationOverflow
+	- YulOptimizerRedundantAssignmentBreakContinue.
+It is used by:
+	- >=0.6.0 (lib/base64/base64.sol#3)_
+  - Affected: `>=0.6.0`
+- **solc-version**
+  - _Version constraint >=0.6.2<0.8.0 is too complex.
+It is used by:
+	- >=0.6.2<0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC721/IERC721.sol#3)
+	- >=0.6.2<0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Enumerable.sol#3)
+	- >=0.6.2<0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Metadata.sol#3)
+	- >=0.6.2<0.8.0 (lib/openzeppelin-contracts/contracts/utils/Address.sol#3)_
+  - Affected: `>=0.6.2<0.8.0, >=0.6.2<0.8.0, >=0.6.2<0.8.0, >=0.6.2<0.8.0`
+- **solc-version**
+  - _Version constraint >=0.6.0<0.8.0 is too complex.
+It is used by:
+	- >=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/access/Ownable.sol#3)
+	- >=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/introspection/ERC165.sol#3)
+	- >=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/introspection/IERC165.sol#3)
+	- >=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/math/SafeMath.sol#3)
+	- >=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#3)
+	- >=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/token/ERC721/IERC721Receiver.sol#3)
+	- >=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/utils/Context.sol#3)
+	- >=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/utils/EnumerableMap.sol#3)
+	- >=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/utils/EnumerableSet.sol#3)
+	- >=0.6.0<0.8.0 (lib/openzeppelin-contracts/contracts/utils/Strings.sol#3)_
+  - Affected: `>=0.6.0<0.8.0, >=0.6.0<0.8.0, >=0.6.0<0.8.0, >=0.6.0<0.8.0, >=0.6.0<0.8.0, >=0.6.0<0.8.0, >=0.6.0<0.8.0, >=0.6.0<0.8.0, >=0.6.0<0.8.0, >=0.6.0<0.8.0`
+- **solc-version**
+  - _Version constraint ^0.7.6 contains known severe issues (https://solidity.readthedocs.io/en/latest/bugs.html)
+	- FullInlinerNonExpressionSplitArgumentEvaluationOrder
+	- MissingSideEffectsOnSelectorAccess
+	- AbiReencodingHeadOverflowWithStaticArrayCleanup
+	- DirtyBytesArrayToStorage
+	- DataLocationChangeInInternalOverride
+	- NestedCalldataArrayAbiReencodingSizeValidation
+	- SignedImmutables
+	- ABIDecodeTwoDimensionalArrayMemory
+	- KeccakCaching.
+It is used by:
+	- ^0.7.6 (src/PuppyRaffle.sol#2)_
+  - Affected: `^0.7.6`
+- **low-level-calls**
+  - _Low level call in PuppyRaffle.selectWinner() (src/PuppyRaffle.sol#125-154):
+	- (success,None) = winner.call{value: prizePool}() (src/PuppyRaffle.sol#151)_
+  - Affected: `selectWinner, (success,None) = winner.call{value: prizePool}()`
+- **low-level-calls**
+  - _Low level call in PuppyRaffle.withdrawFees() (src/PuppyRaffle.sol#157-163):
+	- (success,None) = feeAddress.call{value: feesToWithdraw}() (src/PuppyRaffle.sol#161)_
+  - Affected: `withdrawFees, (success,None) = feeAddress.call{value: feesToWithdraw}()`
+- **low-level-calls**
+  - _Low level call in Address.functionStaticCall(address,bytes,string) (lib/openzeppelin-contracts/contracts/utils/Address.sol#139-145):
+	- (success,returndata) = target.staticcall(data) (lib/openzeppelin-contracts/contracts/utils/Address.sol#143)_
+  - Affected: `functionStaticCall, (success,returndata) = target.staticcall(data)`
+- **low-level-calls**
+  - _Low level call in Address.functionCallWithValue(address,bytes,uint256,string) (lib/openzeppelin-contracts/contracts/utils/Address.sol#114-121):
+	- (success,returndata) = target.call{value: value}(data) (lib/openzeppelin-contracts/contracts/utils/Address.sol#119)_
+  - Affected: `functionCallWithValue, (success,returndata) = target.call{value: value}(data)`
+- **low-level-calls**
+  - _Low level call in Address.sendValue(address,uint256) (lib/openzeppelin-contracts/contracts/utils/Address.sol#53-59):
+	- (success,None) = recipient.call{value: amount}() (lib/openzeppelin-contracts/contracts/utils/Address.sol#57)_
+  - Affected: `sendValue, (success,None) = recipient.call{value: amount}()`
+- **low-level-calls**
+  - _Low level call in Address.functionDelegateCall(address,bytes,string) (lib/openzeppelin-contracts/contracts/utils/Address.sol#163-169):
+	- (success,returndata) = target.delegatecall(data) (lib/openzeppelin-contracts/contracts/utils/Address.sol#167)_
+  - Affected: `functionDelegateCall, (success,returndata) = target.delegatecall(data)`
+- **naming-convention**
+  - _Parameter ERC721.safeTransferFrom(address,address,uint256,bytes)._data (lib/openzeppelin-contracts/contracts/token/ERC721/ERC721.sol#245) is not in mixedCase_
+  - Affected: `_data`
+- **naming-convention**
+  - _Parameter Base64.decode(string)._data (lib/base64/base64.sol#68) is not in mixedCase_
+  - Affected: `_data`
+- **redundant-statements**
+  - _Redundant expression "this (lib/openzeppelin-contracts/contracts/utils/Context.sol#21)" inContext (lib/openzeppelin-contracts/contracts/utils/Context.sol#15-24)_
+  - Affected: `this, Context`
+- **cache-array-length**
+  - _Loop condition i < players.length (src/PuppyRaffle.sol#111) should use cached array length instead of referencing `length` member of the storage array._
+  - Affected: `i < players.length`
+- **cache-array-length**
+  - _Loop condition i < players.length (src/PuppyRaffle.sol#174) should use cached array length instead of referencing `length` member of the storage array._
+  - Affected: `i < players.length`
+- **cache-array-length**
+  - _Loop condition j < players.length (src/PuppyRaffle.sol#87) should use cached array length instead of referencing `length` member of the storage array._
+  - Affected: `j < players.length`
+- **constable-states**
+  - _PuppyRaffle.commonImageUri (src/PuppyRaffle.sol#38) should be constant_
+  - Affected: `commonImageUri`
+- **constable-states**
+  - _PuppyRaffle.legendaryImageUri (src/PuppyRaffle.sol#48) should be constant_
+  - Affected: `legendaryImageUri`
+- **constable-states**
+  - _PuppyRaffle.rareImageUri (src/PuppyRaffle.sol#43) should be constant_
+  - Affected: `rareImageUri`
+- **immutable-states**
+  - _PuppyRaffle.raffleDuration (src/PuppyRaffle.sol#24) should be immutable_
+  - Affected: `raffleDuration`

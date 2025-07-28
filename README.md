@@ -14,6 +14,14 @@ The inaugural audit report covers the [PasswordStore](https://github.com/Cyfrin/
 - **Deployed Contract (Testnet):** [Sepolia Testnet Etherscan](https://sepolia.etherscan.io/address/0x2ecf6ad327776bf966893c96efb24c9747f6694b)  
 - **Audit Report:** Detailed findings and recommended mitigations for PasswordStore are available within this repository (see `PasswordStore_Security_Audit_Report.md`).
 
+## 2. PuppyRaffle Contract Audit
+
+The second audit reviews the PuppyRaffle smart contract. This project enables users to participate in a decentralized raffle for a chance to win a puppy-themed NFT. Users pay an entrance fee and can request refunds or await randomized winner selection after a defined duration. NFTs have varying rarity (common, rare, legendary) determined by on-chain randomness. The audit identifies risks including reentrancy, weak randomness, and denial-of-service potential due to inefficient player deduplication.
+
+- **Code Repository**: PuppyRaffle GitHub Code
+- **Deployed Contract** : Not available at this time
+- **Audit Report**: See PuppyRaffle_Security_Audit_Report.md in this repository.
+
 ---
 
 ## Future Audits
