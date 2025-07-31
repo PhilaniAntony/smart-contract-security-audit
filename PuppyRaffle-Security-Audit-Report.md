@@ -24,10 +24,6 @@ titlepage-rule-height: 2
 
 This audit focuses on the PuppyRaffle smart contract, which implements a raffle mechanism awarding NFT puppies to winners. The contract allows participants to enter by sending ETH, and winners are selected based on pseudo-random values. The audit identifies critical vulnerabilities, recommends mitigations, and evaluates the contract's overall security posture. The contract uses Solidity ^0.7.6, which is outdated and lacks built-in overflow protections.
 
-\listoffigures  
-\listoftables  
-\newpage
-
 ## High Severity
 
 ### 1. Reentrancy in `refund()`
