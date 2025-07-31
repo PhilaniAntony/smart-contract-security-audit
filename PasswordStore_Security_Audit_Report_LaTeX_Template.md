@@ -1,4 +1,3 @@
-
 ---
 title: "Smart Contract Security Audit Report"
 author: "Philani A Dlamini"
